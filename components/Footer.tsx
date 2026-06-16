@@ -7,13 +7,17 @@ export default function Footer() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 flex flex-col items-center gap-4 text-center">
         <Link href="/" aria-label="InfinitySub home">
           <Image
-            src="/logo/logo.jpg"
+            src="/logo/logo.png"
             alt="InfinitySub logo"
-            width={880}
-            height={170}
+            width={1176}
+            height={172}
             className="h-8 w-auto opacity-90"
           />
         </Link>
+        <p className="text-base font-semibold text-[#1d1d1f]">
+          Translate Subtitles.{" "}
+          <span style={{ color: "#E8003D" }}>Connect Worlds.</span>
+        </p>
         <p className="text-[#6e6e73] text-sm max-w-md">
           Translate subtitle files instantly with AI - auto-detect the source
           language and export to 20+ languages while preserving timing.
