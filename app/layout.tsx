@@ -10,6 +10,7 @@ const DESCRIPTION =
 const OG_IMAGE = "/logo/og.webp";
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://infinitysub.vercel.app"),
   title: {
     default: TITLE,
     template: `%s | ${SITE_NAME}`,
