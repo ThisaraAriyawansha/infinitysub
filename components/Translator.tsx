@@ -1,6 +1,44 @@
 "use client";
 import { useState, useCallback, useRef } from "react";
 
+const ICON_PROPS = {
+  width: 18,
+  height: 18,
+  viewBox: "0 0 24 24",
+  fill: "none",
+  stroke: "currentColor",
+  strokeWidth: 1.8,
+  strokeLinecap: "round" as const,
+  strokeLinejoin: "round" as const,
+};
+
+function IconGlobe() {
+  return (
+    <svg {...ICON_PROPS}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 3a13 13 0 0 0 0 18 13 13 0 0 0 0-18" />
+      <path d="M3.5 9h17M3.5 15h17" />
+    </svg>
+  );
+}
+
+function IconZap() {
+  return (
+    <svg {...ICON_PROPS}>
+      <path d="M12.5 3 5 13h6l-1 8 7.5-10h-6l1-8z" />
+    </svg>
+  );
+}
+
+function IconClock() {
+  return (
+    <svg {...ICON_PROPS}>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M12 7v5l3.5 2" />
+    </svg>
+  );
+}
+
 interface SrtBlock {
   num: string;
   ts: string;
@@ -213,9 +251,21 @@ export default function Translator() {
   const wordCount = blocks.reduce((s, b) => s + b.text.split(/\s+/).length, 0);
 
   return (
-    <div className="min-h-screen bg-white px-4 py-16">
+    <div className="relative bg-white px-4 py-16 overflow-hidden">
+      {/* Decorative background accents */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[640px] h-[320px] rounded-full blur-3xl opacity-60"
+        style={{ background: "radial-gradient(closest-side, #ffd6e2, transparent)" }}
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute top-40 -right-32 w-[360px] h-[360px] rounded-full blur-3xl opacity-50"
+        style={{ background: "radial-gradient(closest-side, #f5f5f7, transparent)" }}
+      />
+
       {/* Header */}
-      <div className="max-w-xl mx-auto text-center mb-12">
+      <div className="relative max-w-xl mx-auto text-center mb-12">
         <div
           className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full mb-5"
           style={{ background: "#fff0f4", color: "#E8003D" }}
@@ -232,7 +282,7 @@ export default function Translator() {
         </p>
       </div>
 
-      <div className="max-w-xl mx-auto space-y-4">
+      <div className="relative max-w-xl mx-auto space-y-4">
         {/* Drop Zone */}
         {!file ? (
           <div
@@ -251,7 +301,33 @@ export default function Translator() {
             <p className="text-[#1d1d1f] font-medium text-base mb-1">Drop your .srt file here</p>
             <p className="text-[#6e6e73] text-sm">or click to browse · any language</p>
           </div>
-        ) : (
+        ) : null}
+
+        {/* Feature highlights — shown only before a file is uploaded */}
+        {!file && (
+          <div className="grid grid-cols-3 gap-3">
+            {[
+              { icon: <IconGlobe />, lbl: "24 Languages" },
+              { icon: <IconZap />, lbl: "Batch Speed" },
+              { icon: <IconClock />, lbl: "Timing Kept" },
+            ].map((f) => (
+              <div
+                key={f.lbl}
+                className="bg-white border border-[#e5e5ea] rounded-xl py-5 text-center transition-colors hover:border-[#E8003D]/30"
+              >
+                <div
+                  className="w-9 h-9 rounded-full flex items-center justify-center mx-auto mb-2"
+                  style={{ background: "#fff0f4", color: "#E8003D" }}
+                >
+                  {f.icon}
+                </div>
+                <p className="text-xs font-medium text-[#1d1d1f]">{f.lbl}</p>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {file && (
           <div className="flex items-center gap-4 bg-[#f5f5f7] rounded-2xl px-5 py-4">
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
@@ -404,20 +480,6 @@ export default function Translator() {
           </div>
         )}
       </div>
-
-      <p className="text-center text-xs text-[#aeaeb2] mt-16">
-        Powered by Google Translate · Built with Next.js
-        <br />
-        Designed & Developed by{" "}
-        <a
-          href="https://plexcode.vercel.app/"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="hover:text-[#6e6e73] transition-colors"
-        >
-          PlexCode
-        </a>
-      </p>
     </div>
   );
 }

@@ -2,7 +2,7 @@ import Translator from "@/components/Translator";
 
 export default function Home() {
   return (
-    <main className="min-h-screen bg-white">
+    <main className="bg-white">
       <Translator />
     </main>
   );
