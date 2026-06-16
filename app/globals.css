@@ -1,0 +1,17 @@
+@import "tailwindcss";
+
+:root {
+  --red: #E8003D;
+  --red-light: #fff0f4;
+  --red-dark: #b5002e;
+}
+
+* {
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  background: #ffffff;
+  color: #1d1d1f;
+}
