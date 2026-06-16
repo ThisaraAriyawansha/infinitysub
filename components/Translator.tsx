@@ -5,13 +5,45 @@ interface SrtBlock {
   num: string;
   ts: string;
   text: string;
-  sinhala?: string;
+  translated?: string;
 }
 
 interface LogEntry {
   msg: string;
   ok: boolean;
 }
+
+interface DetectedLang {
+  code: string;
+  name: string;
+}
+
+const TARGET_LANGUAGES = [
+  { code: "si", name: "Sinhala" },
+  { code: "en", name: "English" },
+  { code: "ta", name: "Tamil" },
+  { code: "hi", name: "Hindi" },
+  { code: "fr", name: "French" },
+  { code: "es", name: "Spanish" },
+  { code: "de", name: "German" },
+  { code: "it", name: "Italian" },
+  { code: "pt", name: "Portuguese" },
+  { code: "ru", name: "Russian" },
+  { code: "ja", name: "Japanese" },
+  { code: "ko", name: "Korean" },
+  { code: "zh-CN", name: "Chinese (Simplified)" },
+  { code: "zh-TW", name: "Chinese (Traditional)" },
+  { code: "ar", name: "Arabic" },
+  { code: "tr", name: "Turkish" },
+  { code: "nl", name: "Dutch" },
+  { code: "pl", name: "Polish" },
+  { code: "sv", name: "Swedish" },
+  { code: "th", name: "Thai" },
+  { code: "vi", name: "Vietnamese" },
+  { code: "id", name: "Indonesian" },
+  { code: "ms", name: "Malay" },
+  { code: "uk", name: "Ukrainian" },
+];
 
 function parseSRT(raw: string): SrtBlock[] {
   const blocks: SrtBlock[] = [];
@@ -29,7 +61,7 @@ function parseSRT(raw: string): SrtBlock[] {
 
 function buildSRT(blocks: SrtBlock[]): string {
   return blocks
-    .map((b) => `${b.num}\n${b.ts}\n${b.sinhala || "[error]"}`)
+    .map((b) => `${b.num}\n${b.ts}\n${b.translated || "[error]"}`)
     .join("\n\n");
 }
 
@@ -43,14 +75,36 @@ export default function Translator() {
   const [outputSrt, setOutputSrt] = useState("");
   const [elapsed, setElapsed] = useState(0);
   const [error, setError] = useState("");
+  const [detectedLang, setDetectedLang] = useState<DetectedLang | null>(null);
+  const [detecting, setDetecting] = useState(false);
+  const [targetLang, setTargetLang] = useState("si");
   const logRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  const targetLangName = TARGET_LANGUAGES.find((l) => l.code === targetLang)?.name ?? targetLang;
 
   const addLog = (msg: string, ok = true) => {
     setLogs((prev) => [...prev, { msg, ok }]);
     setTimeout(() => {
       if (logRef.current) logRef.current.scrollTop = logRef.current.scrollHeight;
     }, 50);
+  };
+
+  const detectLanguage = async (sampleText: string) => {
+    setDetecting(true);
+    try {
+      const res = await fetch("/api/detect", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text: sampleText }),
+      });
+      const data = await res.json();
+      if (res.ok) setDetectedLang({ code: data.code, name: data.name });
+    } catch {
+      // silently ignore — not blocking
+    } finally {
+      setDetecting(false);
+    }
   };
 
   const loadFile = async (f: File) => {
@@ -64,6 +118,7 @@ export default function Translator() {
     setLogs([]);
     setProgress(0);
     setOutputSrt("");
+    setDetectedLang(null);
     const text = await f.text();
     const parsed = parseSRT(text);
     if (!parsed.length) {
@@ -72,6 +127,8 @@ export default function Translator() {
     }
     setFile(f);
     setBlocks(parsed);
+    const sampleText = parsed.slice(0, 3).map((b) => b.text).join(" ");
+    detectLanguage(sampleText);
   };
 
   const onFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,6 +151,7 @@ export default function Translator() {
     setProgress(0);
     setOutputSrt("");
     setError("");
+    setDetectedLang(null);
     if (inputRef.current) inputRef.current.value = "";
   };
 
@@ -106,6 +164,7 @@ export default function Translator() {
     const start = Date.now();
     const BATCH = 40;
     const result = [...blocks];
+    const sourceLang = detectedLang?.code ?? "auto";
     addLog(`Found ${blocks.length} subtitle blocks — starting translation…`);
 
     for (let i = 0; i < blocks.length; i += BATCH) {
@@ -115,20 +174,20 @@ export default function Translator() {
         const res = await fetch("/api/translate", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ blocks: payload }),
+          body: JSON.stringify({ blocks: payload, sourceLang, targetLang }),
         });
         const data = await res.json();
         if (!res.ok) throw new Error(data.error || "API error");
         chunk.forEach((_, j) => {
           const idx = i + j;
-          result[idx] = { ...result[idx], sinhala: data.translations[idx + 1] || "[error]" };
+          result[idx] = { ...result[idx], translated: data.translations[idx + 1] || "[error]" };
         });
         addLog(`✓ Blocks ${i + 1}–${Math.min(i + BATCH, blocks.length)} translated`, true);
       } catch (e: unknown) {
         const msg = e instanceof Error ? e.message : String(e);
         addLog(`✗ Error on blocks ${i + 1}–${Math.min(i + BATCH, blocks.length)}: ${msg}`, false);
         chunk.forEach((_, j) => {
-          result[i + j] = { ...result[i + j], sinhala: "[error]" };
+          result[i + j] = { ...result[i + j], translated: "[error]" };
         });
       }
       setProgress(Math.round(((Math.min(i + BATCH, blocks.length)) / blocks.length) * 100));
@@ -147,7 +206,7 @@ export default function Translator() {
     const blob = new Blob([outputSrt], { type: "text/plain;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = file.name.replace(".srt", "_sinhala.srt");
+    a.download = file.name.replace(".srt", `_${targetLangName.toLowerCase().replace(/\s+/g, "_")}.srt`);
     a.click();
   };
 
@@ -163,14 +222,13 @@ export default function Translator() {
         >
           <span>AI Powered</span>
           <span>•</span>
-          <span>English → සිංහල</span>
+          <span>Auto-Detect → Any Language</span>
         </div>
         <h1 className="text-4xl font-semibold tracking-tight text-[#1d1d1f] mb-3">
           Subtitle Translator
         </h1>
         <p className="text-[#6e6e73] text-base leading-relaxed">
-          Upload your English <code className="text-[#E8003D] text-sm">.srt</code> subtitle file
-          and get a Sinhala translation in seconds.
+          Upload any <code className="text-[#E8003D] text-sm">.srt</code> subtitle file — we&apos;ll detect the language and translate it to your choice.
         </p>
       </div>
 
@@ -191,10 +249,9 @@ export default function Translator() {
             <input ref={inputRef} type="file" accept=".srt" className="hidden" onChange={onFileChange} />
             <div className="text-5xl mb-4">📄</div>
             <p className="text-[#1d1d1f] font-medium text-base mb-1">Drop your .srt file here</p>
-            <p className="text-[#6e6e73] text-sm">or click to browse</p>
+            <p className="text-[#6e6e73] text-sm">or click to browse · any language</p>
           </div>
         ) : (
-          /* File Info Card */
           <div className="flex items-center gap-4 bg-[#f5f5f7] rounded-2xl px-5 py-4">
             <div
               className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
@@ -218,6 +275,41 @@ export default function Translator() {
           </div>
         )}
 
+        {/* Language Detection + Target Selector */}
+        {file && (
+          <div className="bg-[#f5f5f7] rounded-2xl px-5 py-4 space-y-3">
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-[#6e6e73]">Detected language</span>
+              {detecting ? (
+                <span className="text-xs text-[#aeaeb2]">Detecting…</span>
+              ) : detectedLang ? (
+                <span
+                  className="text-xs font-medium px-2.5 py-1 rounded-full"
+                  style={{ background: "#fff0f4", color: "#E8003D" }}
+                >
+                  {detectedLang.name}
+                </span>
+              ) : (
+                <span className="text-xs text-[#aeaeb2]">Unknown</span>
+              )}
+            </div>
+            <div className="h-px bg-[#e5e5ea]" />
+            <div className="flex items-center justify-between">
+              <span className="text-xs text-[#6e6e73]">Translate to</span>
+              <select
+                value={targetLang}
+                onChange={(e) => setTargetLang(e.target.value)}
+                disabled={status === "translating"}
+                className="text-xs font-medium rounded-lg px-2.5 py-1.5 border border-[#d2d2d7] bg-white text-[#1d1d1f] focus:outline-none focus:border-[#E8003D] disabled:opacity-50 cursor-pointer"
+              >
+                {TARGET_LANGUAGES.map((l) => (
+                  <option key={l.code} value={l.code}>{l.name}</option>
+                ))}
+              </select>
+            </div>
+          </div>
+        )}
+
         {/* Error */}
         {error && (
           <div className="bg-[#fff0f4] text-[#E8003D] text-sm rounded-2xl px-5 py-4">
@@ -229,11 +321,11 @@ export default function Translator() {
         {file && status !== "done" && (
           <button
             onClick={translate}
-            disabled={status === "translating"}
+            disabled={status === "translating" || detecting}
             className="w-full py-4 rounded-2xl text-white font-medium text-base transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ background: "#E8003D" }}
           >
-            {status === "translating" ? "Translating…" : "Translate to Sinhala"}
+            {status === "translating" ? "Translating…" : `Translate to ${targetLangName}`}
           </button>
         )}
 
@@ -250,10 +342,7 @@ export default function Translator() {
                 style={{ width: `${progress}%`, background: "#E8003D" }}
               />
             </div>
-            <div
-              ref={logRef}
-              className="max-h-28 overflow-y-auto space-y-0.5 font-mono"
-            >
+            <div ref={logRef} className="max-h-28 overflow-y-auto space-y-0.5 font-mono">
               {logs.map((l, i) => (
                 <p key={i} className="text-xs" style={{ color: l.ok ? "#6e6e73" : "#E8003D" }}>
                   {l.msg}
@@ -266,7 +355,6 @@ export default function Translator() {
         {/* Result */}
         {status === "done" && (
           <div className="bg-[#f5f5f7] rounded-2xl p-5 space-y-4">
-            {/* Stats */}
             <div className="grid grid-cols-3 gap-3">
               {[
                 { val: blocks.length, lbl: "subtitles" },
@@ -280,18 +368,16 @@ export default function Translator() {
               ))}
             </div>
 
-            {/* Preview */}
             <div className="bg-white rounded-xl divide-y divide-[#f5f5f7]">
               {blocks.slice(0, 4).map((b, i) => (
                 <div key={i} className="px-4 py-3">
                   <p className="text-[10px] font-mono text-[#aeaeb2] mb-1">{b.ts}</p>
                   <p className="text-xs text-[#6e6e73] mb-0.5">{b.text}</p>
-                  <p className="text-sm font-medium text-[#1d1d1f]">{b.sinhala}</p>
+                  <p className="text-sm font-medium text-[#1d1d1f]">{b.translated}</p>
                 </div>
               ))}
             </div>
 
-            {/* Log summary */}
             <div ref={logRef} className="max-h-20 overflow-y-auto">
               {logs.map((l, i) => (
                 <p key={i} className="text-xs font-mono" style={{ color: l.ok ? "#6e6e73" : "#E8003D" }}>
@@ -300,14 +386,13 @@ export default function Translator() {
               ))}
             </div>
 
-            {/* Download + Retranslate */}
             <div className="flex gap-3">
               <button
                 onClick={download}
                 className="flex-1 py-3.5 rounded-xl text-white font-medium text-sm transition-all active:scale-[0.99]"
                 style={{ background: "#E8003D" }}
               >
-                ↓ Download Sinhala .srt
+                ↓ Download {targetLangName} .srt
               </button>
               <button
                 onClick={translate}
@@ -320,7 +405,6 @@ export default function Translator() {
         )}
       </div>
 
-      {/* Footer */}
       <p className="text-center text-xs text-[#aeaeb2] mt-16">
         Powered by Google Translate · Built with Next.js
         <br />

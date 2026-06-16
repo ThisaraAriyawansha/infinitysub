@@ -19,7 +19,7 @@ export async function POST(req: NextRequest) {
     const results = await Promise.all(
       (blocks as { index: number; text: string }[]).map(async (b) => ({
         index: b.index,
-        translated: await translateText(b.text),
+        translated: await translateText(b.text, sourceLang, targetLang),
       }))
     );
 
