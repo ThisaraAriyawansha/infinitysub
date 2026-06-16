@@ -1,9 +1,12 @@
-import Anthropic from "@anthropic-ai/sdk";
 import { NextRequest, NextResponse } from "next/server";
 
-const client = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-});
+async function translateText(text: string): Promise<string> {
+  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=en&tl=si&dt=t&q=${encodeURIComponent(text)}`;
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Google Translate error: ${res.status}`);
+  const data = await res.json();
+  return (data[0] as [string][]).map((item) => item[0]).filter(Boolean).join("");
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,34 +16,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "No subtitle blocks provided" }, { status: 400 });
     }
 
-    const numbered = blocks
-      .map((b: { index: number; text: string }) => `[${b.index}] ${b.text}`)
-      .join("\n");
-
-    const message = await client.messages.create({
-      model: "claude-sonnet-4-6",
-      max_tokens: 2000,
-      messages: [
-        {
-          role: "user",
-          content: `Translate the following English subtitle lines to Sinhala (සිංහල script).
-Keep each line with its number prefix [N]. Translate ONLY the text content.
-Return ONLY the translated lines, nothing else, no explanation.
-
-${numbered}`,
-        },
-      ],
-    });
-
-    const raw = message.content.find((c) => c.type === "text")?.text || "";
-    const lines = raw.trim().split("\n");
+    const results = await Promise.all(
+      (blocks as { index: number; text: string }[]).map(async (b) => ({
+        index: b.index,
+        translated: await translateText(b.text),
+      }))
+    );
 
     const translations: Record<number, string> = {};
-    for (const line of lines) {
-      const match = line.match(/^\[(\d+)\]\s*(.*)/);
-      if (match) {
-        translations[parseInt(match[1])] = match[2].trim();
-      }
+    for (const r of results) {
+      translations[r.index] = r.translated;
     }
 
     return NextResponse.json({ translations });

@@ -104,7 +104,7 @@ export default function Translator() {
     setProgress(0);
     setOutputSrt("");
     const start = Date.now();
-    const BATCH = 6;
+    const BATCH = 40;
     const result = [...blocks];
     addLog(`Found ${blocks.length} subtitle blocks — starting translation…`);
 
@@ -322,7 +322,17 @@ export default function Translator() {
 
       {/* Footer */}
       <p className="text-center text-xs text-[#aeaeb2] mt-16">
-        Powered by Claude AI · Built with Next.js
+        Powered by Google Translate · Built with Next.js
+        <br />
+        Designed & Developed by{" "}
+        <a
+          href="https://plexcode.vercel.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="hover:text-[#6e6e73] transition-colors"
+        >
+          PlexCode
+        </a>
       </p>
     </div>
   );
