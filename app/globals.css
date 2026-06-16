@@ -10,10 +10,12 @@
   -webkit-font-smoothing: antialiased;
 }
 
+html {
+  scroll-behavior: smooth;
+}
+
 body {
-  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Helvetica Neue", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, var(--font-inter), "Helvetica Neue", Arial, sans-serif;
   background-color: #ffffff;
-  background-image: radial-gradient(circle, #ececef 1px, transparent 1px);
-  background-size: 28px 28px;
   color: #1d1d1f;
 }

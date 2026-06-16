@@ -19,33 +19,27 @@ const FAQS = [
 
 export default function FAQ() {
   return (
-    <section className="bg-white px-4 py-16 border-t border-[#e5e5ea]">
+    <section className="bg-white px-4 sm:px-6 py-14 sm:py-20 md:py-24 border-t border-[#e5e5ea]">
       <div className="max-w-2xl mx-auto">
-        <div className="text-center mb-10">
-          <p
-            className="text-xs font-semibold tracking-wide uppercase mb-2"
-            style={{ color: "#E8003D" }}
-          >
-            FAQ
-          </p>
-          <h2 className="text-2xl font-semibold tracking-tight text-[#1d1d1f]">
+        <div className="text-center mb-10 sm:mb-12">
+          <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
             Frequently asked questions
           </h2>
         </div>
 
         <div className="divide-y divide-[#e5e5ea] border-t border-b border-[#e5e5ea]">
           {FAQS.map((f) => (
-            <details key={f.q} className="group py-4">
-              <summary className="flex items-center justify-between cursor-pointer list-none text-sm font-medium text-[#1d1d1f]">
+            <details key={f.q} className="group py-5">
+              <summary className="flex items-center justify-between gap-4 cursor-pointer list-none text-[15px] font-medium text-[#1d1d1f]">
                 {f.q}
                 <span
-                  className="ml-4 flex-shrink-0 text-lg leading-none transition-transform group-open:rotate-45"
+                  className="flex-shrink-0 text-lg leading-none transition-transform group-open:rotate-45"
                   style={{ color: "#E8003D" }}
                 >
                   +
                 </span>
               </summary>
-              <p className="text-sm text-[#6e6e73] leading-relaxed mt-2 pr-6">
+              <p className="text-[15px] text-[#6e6e73] leading-relaxed mt-3 pr-6">
                 {f.a}
               </p>
             </details>

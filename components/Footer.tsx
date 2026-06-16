@@ -4,7 +4,7 @@ import Link from "next/link";
 export default function Footer() {
   return (
     <footer className="border-t border-[#e5e5ea] bg-white">
-      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-10 flex flex-col items-center gap-4 text-center">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-14 flex flex-col items-center gap-5 text-center">
         <Link href="/" aria-label="InfinitySub home">
           <Image
             src="/logo/logo.png"
@@ -14,9 +14,8 @@ export default function Footer() {
             className="h-8 w-auto opacity-90"
           />
         </Link>
-        <p className="text-base font-semibold text-[#1d1d1f]">
-          Translate Subtitles.{" "}
-          <span style={{ color: "#E8003D" }}>Connect Worlds.</span>
+        <p className="text-[15px] font-medium text-[#1d1d1f]">
+          Translate Subtitles. <span style={{ color: "#E8003D" }}>Connect Worlds.</span>
         </p>
         <p className="text-[#6e6e73] text-sm max-w-md">
           Translate subtitle files instantly with AI - auto-detect the source

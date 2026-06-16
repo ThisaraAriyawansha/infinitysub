@@ -1,7 +1,13 @@
 import type { Metadata, Viewport } from "next";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
+
+const inter = Inter({
+  subsets: ["latin"],
+  variable: "--font-inter",
+});
 
 const SITE_NAME = "InfinitySub";
 const TITLE = "InfinitySub - AI Subtitle Translator | English to Sinhala & 20+ Languages";
@@ -60,13 +66,8 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" className={inter.variable}>
       <body className="min-h-screen flex flex-col bg-white">
-        <div
-          aria-hidden
-          className="h-[3px] w-full"
-          style={{ background: "linear-gradient(90deg, #E8003D, #ff6b8a, #E8003D)" }}
-        />
         <Header />
         <div className="flex-1">{children}</div>
         <Footer />

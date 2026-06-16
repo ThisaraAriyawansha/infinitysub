@@ -39,6 +39,41 @@ function IconClock() {
   );
 }
 
+function IconDoc() {
+  return (
+    <svg {...ICON_PROPS} width={28} height={28}>
+      <path d="M7 3.5h7l3 3V20a.5.5 0 0 1-.5.5h-9A.5.5 0 0 1 7 20z" />
+      <path d="M14 3.5V7h3" />
+      <path d="M9.5 12h5M9.5 15h5M9.5 9h2" />
+    </svg>
+  );
+}
+
+function IconX() {
+  return (
+    <svg {...ICON_PROPS} width={14} height={14}>
+      <path d="M5 5l14 14M19 5 5 19" />
+    </svg>
+  );
+}
+
+function IconCheck() {
+  return (
+    <svg {...ICON_PROPS} width={12} height={12}>
+      <path d="M5 12.5 9.5 17 19 7" />
+    </svg>
+  );
+}
+
+function IconDownload() {
+  return (
+    <svg {...ICON_PROPS} width={16} height={16}>
+      <path d="M12 4v11M7.5 11 12 15.5 16.5 11" />
+      <path d="M5 19.5h14" />
+    </svg>
+  );
+}
+
 interface SrtBlock {
   num: string;
   ts: string;
@@ -220,10 +255,10 @@ export default function Translator() {
           const idx = i + j;
           result[idx] = { ...result[idx], translated: data.translations[idx + 1] || "[error]" };
         });
-        addLog(`✓ Blocks ${i + 1}–${Math.min(i + BATCH, blocks.length)} translated`, true);
+        addLog(`Blocks ${i + 1}–${Math.min(i + BATCH, blocks.length)} translated`, true);
       } catch (e: unknown) {
         const msg = e instanceof Error ? e.message : String(e);
-        addLog(`✗ Error on blocks ${i + 1}–${Math.min(i + BATCH, blocks.length)}: ${msg}`, false);
+        addLog(`Error on blocks ${i + 1}–${Math.min(i + BATCH, blocks.length)}: ${msg}`, false);
         chunk.forEach((_, j) => {
           result[i + j] = { ...result[i + j], translated: "[error]" };
         });
@@ -251,38 +286,19 @@ export default function Translator() {
   const wordCount = blocks.reduce((s, b) => s + b.text.split(/\s+/).length, 0);
 
   return (
-    <div className="relative bg-white px-4 py-16 overflow-hidden">
-      {/* Decorative background accents */}
-      <div
-        aria-hidden
-        className="pointer-events-none absolute -top-24 left-1/2 -translate-x-1/2 w-[640px] h-[320px] rounded-full blur-3xl opacity-60"
-        style={{ background: "radial-gradient(closest-side, #ffd6e2, transparent)" }}
-      />
-      <div
-        aria-hidden
-        className="pointer-events-none absolute top-40 -right-32 w-[360px] h-[360px] rounded-full blur-3xl opacity-50"
-        style={{ background: "radial-gradient(closest-side, #f5f5f7, transparent)" }}
-      />
-
+    <div className="bg-white px-4 sm:px-6 py-14 sm:py-20 md:py-24">
       {/* Header */}
-      <div className="relative max-w-xl mx-auto text-center mb-12">
-        <div
-          className="inline-flex items-center gap-2 text-xs font-medium px-3 py-1 rounded-full mb-5"
-          style={{ background: "#fff0f4", color: "#E8003D" }}
-        >
-          <span>AI Powered</span>
-          <span>•</span>
-          <span>Auto-Detect → Any Language</span>
-        </div>
-        <h1 className="text-4xl font-semibold tracking-tight text-[#1d1d1f] mb-3">
+      <div className="max-w-xl mx-auto text-center mb-10 sm:mb-14">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl font-semibold tracking-tight text-[#1d1d1f] mb-3 leading-[1.2]">
           Subtitle Translator
         </h1>
-        <p className="text-[#6e6e73] text-base leading-relaxed">
-          Upload any <code className="text-[#E8003D] text-sm">.srt</code> subtitle file - we&apos;ll detect the language and translate it to your choice.
+        <p className="text-[#6e6e73] text-sm sm:text-base leading-relaxed">
+          Upload an .srt file. We detect the language and translate it to
+          your choice, timing untouched.
         </p>
       </div>
 
-      <div className="relative max-w-xl mx-auto space-y-4">
+      <div className="max-w-xl mx-auto space-y-4">
         {/* Drop Zone */}
         {!file ? (
           <div
@@ -290,50 +306,47 @@ export default function Translator() {
             onDragLeave={() => setDragging(false)}
             onDrop={onDrop}
             onClick={() => inputRef.current?.click()}
-            className="relative border-2 border-dashed rounded-2xl p-12 text-center cursor-pointer transition-all"
+            className="relative border rounded-2xl p-8 sm:p-12 text-center cursor-pointer transition-colors"
             style={{
-              borderColor: dragging ? "#E8003D" : "#d2d2d7",
-              background: dragging ? "#fff0f4" : "#fafafa",
+              borderColor: dragging ? "#E8003D" : "#e5e5ea",
+              background: dragging ? "#fff0f4" : "transparent",
             }}
           >
             <input ref={inputRef} type="file" accept=".srt" className="hidden" onChange={onFileChange} />
-            <div className="text-5xl mb-4">📄</div>
-            <p className="text-[#1d1d1f] font-medium text-base mb-1">Drop your .srt file here</p>
-            <p className="text-[#6e6e73] text-sm">or click to browse · any language</p>
+            <div
+              className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center mx-auto mb-4"
+              style={{ background: "#fff0f4", color: "#E8003D" }}
+            >
+              <IconDoc />
+            </div>
+            <p className="text-[#1d1d1f] font-medium text-sm sm:text-base mb-1">Drop your .srt file here</p>
+            <p className="text-[#6e6e73] text-sm">or click to browse</p>
           </div>
         ) : null}
 
         {/* Feature highlights - shown only before a file is uploaded */}
         {!file && (
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 text-center divide-x divide-[#e5e5ea] border border-[#e5e5ea] rounded-2xl py-5">
             {[
               { icon: <IconGlobe />, lbl: "24 Languages" },
               { icon: <IconZap />, lbl: "Batch Speed" },
               { icon: <IconClock />, lbl: "Timing Kept" },
             ].map((f) => (
-              <div
-                key={f.lbl}
-                className="bg-white border border-[#e5e5ea] rounded-xl py-5 text-center transition-colors hover:border-[#E8003D]/30"
-              >
-                <div
-                  className="w-9 h-9 rounded-full flex items-center justify-center mx-auto mb-2"
-                  style={{ background: "#fff0f4", color: "#E8003D" }}
-                >
-                  {f.icon}
-                </div>
-                <p className="text-xs font-medium text-[#1d1d1f]">{f.lbl}</p>
+              <div key={f.lbl} className="flex flex-col items-center gap-2 px-1">
+                <div style={{ color: "#E8003D" }}>{f.icon}</div>
+                <p className="text-[11px] sm:text-xs font-medium text-[#6e6e73]">{f.lbl}</p>
               </div>
             ))}
           </div>
         )}
 
         {file && (
-          <div className="flex items-center gap-4 bg-[#f5f5f7] rounded-2xl px-5 py-4">
+          <div className="flex items-center gap-4 border border-[#e5e5ea] rounded-2xl px-5 py-4">
             <div
-              className="w-10 h-10 rounded-xl flex items-center justify-center text-white text-sm font-bold flex-shrink-0"
-              style={{ background: "#E8003D" }}
+              className="w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0"
+              style={{ background: "#fff0f4", color: "#E8003D" }}
             >
-              SRT
+              <IconDoc />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-[#1d1d1f] text-sm truncate">{file.name}</p>
@@ -344,16 +357,17 @@ export default function Translator() {
             </div>
             <button
               onClick={removeFile}
-              className="text-[#6e6e73] hover:text-[#1d1d1f] transition-colors text-lg w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#e5e5ea]"
+              className="text-[#6e6e73] hover:text-[#1d1d1f] transition-colors w-8 h-8 flex items-center justify-center rounded-full hover:bg-[#f5f5f7] flex-shrink-0"
+              aria-label="Remove file"
             >
-              ✕
+              <IconX />
             </button>
           </div>
         )}
 
         {/* Language Detection + Target Selector */}
         {file && (
-          <div className="bg-[#f5f5f7] rounded-2xl px-5 py-4 space-y-3">
+          <div className="border border-[#e5e5ea] rounded-2xl px-5 py-4 space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-xs text-[#6e6e73]">Detected language</span>
               {detecting ? (
@@ -376,7 +390,7 @@ export default function Translator() {
                 value={targetLang}
                 onChange={(e) => setTargetLang(e.target.value)}
                 disabled={status === "translating"}
-                className="text-xs font-medium rounded-lg px-2.5 py-1.5 border border-[#d2d2d7] bg-white text-[#1d1d1f] focus:outline-none focus:border-[#E8003D] disabled:opacity-50 cursor-pointer"
+                className="text-xs font-medium rounded-lg px-2.5 py-1.5 border border-[#e5e5ea] bg-white text-[#1d1d1f] focus:outline-none focus:border-[#E8003D] disabled:opacity-50 cursor-pointer"
               >
                 {TARGET_LANGUAGES.map((l) => (
                   <option key={l.code} value={l.code}>{l.name}</option>
@@ -388,7 +402,7 @@ export default function Translator() {
 
         {/* Error */}
         {error && (
-          <div className="bg-[#fff0f4] text-[#E8003D] text-sm rounded-2xl px-5 py-4">
+          <div className="text-[#E8003D] text-sm rounded-2xl px-5 py-4 border border-[#E8003D]/20">
             {error}
           </div>
         )}
@@ -398,7 +412,7 @@ export default function Translator() {
           <button
             onClick={translate}
             disabled={status === "translating" || detecting}
-            className="w-full py-4 rounded-2xl text-white font-medium text-base transition-all active:scale-[0.99] disabled:opacity-50 disabled:cursor-not-allowed"
+            className="w-full py-4 rounded-2xl text-white font-medium text-base transition-opacity active:opacity-80 disabled:opacity-50 disabled:cursor-not-allowed"
             style={{ background: "#E8003D" }}
           >
             {status === "translating" ? "Translating…" : `Translate to ${targetLangName}`}
@@ -407,7 +421,7 @@ export default function Translator() {
 
         {/* Progress */}
         {status === "translating" && (
-          <div className="bg-[#f5f5f7] rounded-2xl p-5 space-y-3">
+          <div className="border border-[#e5e5ea] rounded-2xl p-5 space-y-3">
             <div className="flex justify-between text-xs text-[#6e6e73]">
               <span>Translating…</span>
               <span>{progress}%</span>
@@ -418,9 +432,10 @@ export default function Translator() {
                 style={{ width: `${progress}%`, background: "#E8003D" }}
               />
             </div>
-            <div ref={logRef} className="max-h-28 overflow-y-auto space-y-0.5 font-mono">
+            <div ref={logRef} className="max-h-28 overflow-y-auto space-y-1.5">
               {logs.map((l, i) => (
-                <p key={i} className="text-xs" style={{ color: l.ok ? "#6e6e73" : "#E8003D" }}>
+                <p key={i} className="flex items-center gap-1.5 text-xs" style={{ color: l.ok ? "#6e6e73" : "#E8003D" }}>
+                  <span className="flex-shrink-0">{l.ok ? <IconCheck /> : <IconX />}</span>
                   {l.msg}
                 </p>
               ))}
@@ -430,23 +445,23 @@ export default function Translator() {
 
         {/* Result */}
         {status === "done" && (
-          <div className="bg-[#f5f5f7] rounded-2xl p-5 space-y-4">
-            <div className="grid grid-cols-3 gap-3">
+          <div className="border border-[#e5e5ea] rounded-2xl p-5 space-y-5">
+            <div className="grid grid-cols-3 divide-x divide-[#e5e5ea]">
               {[
                 { val: blocks.length, lbl: "subtitles" },
                 { val: wordCount.toLocaleString(), lbl: "words" },
                 { val: `${elapsed}s`, lbl: "duration" },
               ].map((s) => (
-                <div key={s.lbl} className="bg-white rounded-xl p-3 text-center">
+                <div key={s.lbl} className="text-center">
                   <p className="text-xl font-semibold text-[#1d1d1f]">{s.val}</p>
                   <p className="text-xs text-[#6e6e73] mt-0.5">{s.lbl}</p>
                 </div>
               ))}
             </div>
 
-            <div className="bg-white rounded-xl divide-y divide-[#f5f5f7]">
+            <div className="divide-y divide-[#e5e5ea] border-y border-[#e5e5ea]">
               {blocks.slice(0, 4).map((b, i) => (
-                <div key={i} className="px-4 py-3">
+                <div key={i} className="py-3">
                   <p className="text-[10px] font-mono text-[#aeaeb2] mb-1">{b.ts}</p>
                   <p className="text-xs text-[#6e6e73] mb-0.5">{b.text}</p>
                   <p className="text-sm font-medium text-[#1d1d1f]">{b.translated}</p>
@@ -454,9 +469,10 @@ export default function Translator() {
               ))}
             </div>
 
-            <div ref={logRef} className="max-h-20 overflow-y-auto">
+            <div ref={logRef} className="max-h-20 overflow-y-auto space-y-1">
               {logs.map((l, i) => (
-                <p key={i} className="text-xs font-mono" style={{ color: l.ok ? "#6e6e73" : "#E8003D" }}>
+                <p key={i} className="flex items-center gap-1.5 text-xs" style={{ color: l.ok ? "#6e6e73" : "#E8003D" }}>
+                  <span className="flex-shrink-0">{l.ok ? <IconCheck /> : <IconX />}</span>
                   {l.msg}
                 </p>
               ))}
@@ -465,14 +481,15 @@ export default function Translator() {
             <div className="flex gap-3">
               <button
                 onClick={download}
-                className="flex-1 py-3.5 rounded-xl text-white font-medium text-sm transition-all active:scale-[0.99]"
+                className="flex-1 py-3.5 rounded-xl text-white font-medium text-sm transition-opacity active:opacity-80 flex items-center justify-center gap-2"
                 style={{ background: "#E8003D" }}
               >
-                ↓ Download {targetLangName} .srt
+                <IconDownload />
+                Download {targetLangName} .srt
               </button>
               <button
                 onClick={translate}
-                className="px-5 py-3.5 rounded-xl font-medium text-sm border border-[#d2d2d7] text-[#1d1d1f] hover:bg-[#f5f5f7] transition-all"
+                className="px-5 py-3.5 rounded-xl font-medium text-sm border border-[#e5e5ea] text-[#1d1d1f] hover:bg-[#f5f5f7] transition-colors"
               >
                 Retry
               </button>

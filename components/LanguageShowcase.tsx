@@ -8,15 +8,9 @@ const LANGUAGES = [
 
 export default function LanguageShowcase() {
   return (
-    <section className="bg-[#fafafa] px-4 py-16 border-t border-[#e5e5ea]">
+    <section className="bg-[#fafafa] px-4 sm:px-6 py-14 sm:py-20 md:py-24 border-t border-[#e5e5ea]">
       <div className="max-w-3xl mx-auto text-center">
-        <p
-          className="text-xs font-semibold tracking-wide uppercase mb-2"
-          style={{ color: "#E8003D" }}
-        >
-          Supported languages
-        </p>
-        <h2 className="text-2xl font-semibold tracking-tight text-[#1d1d1f] mb-8">
+        <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight text-[#1d1d1f] mb-8 sm:mb-10">
           Translate to 24 languages, out of the box
         </h2>
 
