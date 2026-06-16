@@ -139,7 +139,7 @@ export default function Translator() {
       const data = await res.json();
       if (res.ok) setDetectedLang({ code: data.code, name: data.name });
     } catch {
-      // silently ignore — not blocking
+      // silently ignore - not blocking
     } finally {
       setDetecting(false);
     }
@@ -203,7 +203,7 @@ export default function Translator() {
     const BATCH = 40;
     const result = [...blocks];
     const sourceLang = detectedLang?.code ?? "auto";
-    addLog(`Found ${blocks.length} subtitle blocks — starting translation…`);
+    addLog(`Found ${blocks.length} subtitle blocks - starting translation...`);
 
     for (let i = 0; i < blocks.length; i += BATCH) {
       const chunk = blocks.slice(i, i + BATCH);
@@ -278,7 +278,7 @@ export default function Translator() {
           Subtitle Translator
         </h1>
         <p className="text-[#6e6e73] text-base leading-relaxed">
-          Upload any <code className="text-[#E8003D] text-sm">.srt</code> subtitle file — we&apos;ll detect the language and translate it to your choice.
+          Upload any <code className="text-[#E8003D] text-sm">.srt</code> subtitle file - we&apos;ll detect the language and translate it to your choice.
         </p>
       </div>
 
@@ -303,7 +303,7 @@ export default function Translator() {
           </div>
         ) : null}
 
-        {/* Feature highlights — shown only before a file is uploaded */}
+        {/* Feature highlights - shown only before a file is uploaded */}
         {!file && (
           <div className="grid grid-cols-3 gap-3">
             {[

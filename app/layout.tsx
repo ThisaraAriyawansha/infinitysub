@@ -4,7 +4,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 
 const SITE_NAME = "InfinitySub";
-const TITLE = "InfinitySub — AI Subtitle Translator | English to Sinhala & 20+ Languages";
+const TITLE = "InfinitySub - AI Subtitle Translator | English to Sinhala & 20+ Languages";
 const DESCRIPTION =
   "Upload an .srt subtitle file and translate it instantly with AI. Auto-detects the source language and exports to Sinhala, Tamil, Hindi, and 20+ other languages while preserving timing.";
 const OG_IMAGE = "/logo/og.webp";
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
         url: OG_IMAGE,
         width: 1358,
         height: 1159,
-        alt: "InfinitySub — Translate Subtitles. Connect Worlds.",
+        alt: "InfinitySub - Translate Subtitles. Connect Worlds.",
       },
     ],
   },

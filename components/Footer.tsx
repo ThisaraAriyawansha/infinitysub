@@ -15,7 +15,7 @@ export default function Footer() {
           />
         </Link>
         <p className="text-[#6e6e73] text-sm max-w-md">
-          Translate subtitle files instantly with AI — auto-detect the source
+          Translate subtitle files instantly with AI - auto-detect the source
           language and export to 20+ languages while preserving timing.
         </p>
         <p className="text-xs text-[#aeaeb2]">
