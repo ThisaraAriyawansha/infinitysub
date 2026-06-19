@@ -19,3 +19,29 @@ body {
   background-color: #ffffff;
   color: #1d1d1f;
 }
+
+@keyframes footer-glow-drift {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(4%, -6%) scale(1.1);
+  }
+}
+
+@keyframes footer-glow-drift-reverse {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-5%, 5%) scale(1.05);
+  }
+}
+
+.footer-glow-a {
+  animation: footer-glow-drift 16s ease-in-out infinite;
+}
+
+.footer-glow-b {
+  animation: footer-glow-drift-reverse 20s ease-in-out infinite;
+}

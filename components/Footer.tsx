@@ -34,8 +34,23 @@ const socials = [
 export default function Footer() {
   return (
     <footer className="px-4 sm:px-6 lg:px-12 pb-6 pt-12">
-      <div className="w-full rounded-3xl bg-[#B30030] text-white px-6 sm:px-10 lg:px-16 py-12">
-        <div className="grid grid-cols-1 md:grid-cols-[1.3fr_1fr_1fr] gap-10">
+      <div className="relative w-full overflow-hidden rounded-3xl bg-[#B30030] text-white px-6 sm:px-10 lg:px-16 py-12">
+        {/* decorative background layer */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div
+            className="absolute inset-0 opacity-[0.07]"
+            style={{
+              backgroundImage:
+                "linear-gradient(to right, white 1px, transparent 1px), linear-gradient(to bottom, white 1px, transparent 1px)",
+              backgroundSize: "40px 40px",
+            }}
+          />
+          <div className="footer-glow-a absolute -top-32 -left-20 h-72 w-72 rounded-full bg-white/20 blur-3xl" />
+          <div className="footer-glow-b absolute -bottom-24 right-0 h-80 w-80 rounded-full bg-[#ff5577]/30 blur-3xl" />
+          <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/15" />
+        </div>
+
+        <div className="relative grid grid-cols-1 md:grid-cols-[1.3fr_1fr_1fr] gap-10">
           <div className="flex flex-col gap-5">
             <Link href="/" aria-label="InfinitySub home" className="inline-block rounded-lg bg-white px-3 py-1.5 w-fit">
               <Image
@@ -110,7 +125,7 @@ export default function Footer() {
           </div>
         </div>
 
-        <div className="border-t border-white/20 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/70 text-center sm:text-left">
+        <div className="relative border-t border-white/20 mt-10 pt-6 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-white/70 text-center sm:text-left">
           <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2">
             {quickLinks.map((link) => (
               <Link key={link.label} href={link.href} className="hover:text-white transition-colors">
@@ -118,7 +133,17 @@ export default function Footer() {
               </Link>
             ))}
           </div>
-          <p>Copyright © {new Date().getFullYear()} InfinitySub. All rights reserved.</p>
+          <div className="flex flex-col items-center sm:items-end gap-1">
+            <p>Copyright © {new Date().getFullYear()} InfinitySub. All rights reserved.</p>
+            <a
+              href="https://plexcode.vercel.app/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-[10px] text-white/60 hover:text-white transition-colors"
+            >
+              Designed and Developed by plexCode
+            </a>
+          </div>
         </div>
       </div>
     </footer>
