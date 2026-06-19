@@ -18,7 +18,7 @@ const STEPS = [
 
 export default function HowItWorks() {
   return (
-    <section className="bg-white px-4 sm:px-6 py-14 sm:py-20 md:py-24 border-t border-[#e5e5ea]">
+    <section id="how-it-works" className="bg-white px-4 sm:px-6 py-14 sm:py-20 md:py-24 border-t border-[#e5e5ea] scroll-mt-16">
       <div className="max-w-4xl mx-auto">
         <div className="text-center mb-12 sm:mb-16">
           <p className="text-xs font-semibold tracking-wide uppercase mb-3" style={{ color: "#E8003D" }}>

@@ -19,7 +19,7 @@ const FAQS = [
 
 export default function FAQ() {
   return (
-    <section className="bg-white px-4 sm:px-6 py-14 sm:py-20 md:py-24 border-t border-[#e5e5ea]">
+    <section id="faq" className="bg-white px-4 sm:px-6 py-14 sm:py-20 md:py-24 border-t border-[#e5e5ea] scroll-mt-16">
       <div className="max-w-2xl mx-auto">
         <div className="text-center mb-10 sm:mb-12">
           <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold tracking-tight text-[#1d1d1f]">
