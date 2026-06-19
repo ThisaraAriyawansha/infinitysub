@@ -5,7 +5,7 @@ const FAQS = [
   },
   {
     q: "Which subtitle formats are supported?",
-    a: "Currently .srt files. We parse each subtitle block, translate the text, and rebuild the file with the original timestamps untouched.",
+    a: "SRT, WebVTT (.vtt), SubStation Alpha (.ass/.ssa), and MicroDVD (.sub). We parse each subtitle block, translate the text, and rebuild the file in its original format with timestamps and styling untouched.",
   },
   {
     q: "Do I need to know the source language?",

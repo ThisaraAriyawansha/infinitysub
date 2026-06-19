@@ -12,7 +12,7 @@ const inter = Inter({
 const SITE_NAME = "InfinitySub";
 const TITLE = "InfinitySub - AI Subtitle Translator | English to Sinhala & 20+ Languages";
 const DESCRIPTION =
-  "Upload an .srt subtitle file and translate it instantly with AI. Auto-detects the source language and exports to Sinhala, Tamil, Hindi, and 20+ other languages while preserving timing.";
+  "Upload an SRT, VTT, ASS/SSA, or SUB subtitle file and translate it instantly with AI. Auto-detects the source language and exports to Sinhala, Tamil, Hindi, and 20+ other languages while preserving timing and formatting.";
 const OG_IMAGE = "/logo/og.webp";
 
 export const metadata: Metadata = {
@@ -26,9 +26,12 @@ export const metadata: Metadata = {
   keywords: [
     "subtitle translator",
     "srt translator",
+    "vtt translator",
+    "ass subtitle translator",
     "english to sinhala subtitles",
     "AI subtitle translation",
     "translate srt file",
+    "translate vtt file",
     "subtitle converter",
   ],
   authors: [{ name: "PlexCode", url: "https://plexcode.vercel.app/" }],

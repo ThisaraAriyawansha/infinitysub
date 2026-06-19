@@ -1,5 +1,16 @@
 "use client";
 import { useState, useCallback, useRef } from "react";
+import {
+  detectFormat,
+  formatLabel,
+  parseSubtitle,
+  buildSubtitle,
+  outputExtension,
+  SUPPORTED_EXTENSIONS,
+  type SubFormat,
+  type SubBlock,
+  type FormatExtra,
+} from "@/lib/subtitleFormats";
 
 const ICON_PROPS = {
   width: 18,
@@ -74,13 +85,6 @@ function IconDownload() {
   );
 }
 
-interface SrtBlock {
-  num: string;
-  ts: string;
-  text: string;
-  translated?: string;
-}
-
 interface LogEntry {
   msg: string;
   ok: boolean;
@@ -118,30 +122,12 @@ const TARGET_LANGUAGES = [
   { code: "uk", name: "Ukrainian" },
 ];
 
-function parseSRT(raw: string): SrtBlock[] {
-  const blocks: SrtBlock[] = [];
-  const parts = raw.trim().split(/\n\s*\n/);
-  for (const part of parts) {
-    const lines = part.trim().split("\n");
-    if (lines.length < 3) continue;
-    const num = lines[0].trim();
-    const ts = lines[1].trim();
-    const text = lines.slice(2).join(" ").trim();
-    if (text) blocks.push({ num, ts, text });
-  }
-  return blocks;
-}
-
-function buildSRT(blocks: SrtBlock[]): string {
-  return blocks
-    .map((b) => `${b.num}\n${b.ts}\n${b.translated || "[error]"}`)
-    .join("\n\n");
-}
-
 export default function Translator() {
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [blocks, setBlocks] = useState<SrtBlock[]>([]);
+  const [format, setFormat] = useState<SubFormat | null>(null);
+  const [formatExtra, setFormatExtra] = useState<FormatExtra | undefined>(undefined);
+  const [blocks, setBlocks] = useState<SubBlock[]>([]);
   const [progress, setProgress] = useState(0);
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [status, setStatus] = useState<"idle" | "translating" | "done" | "error">("idle");
@@ -181,8 +167,9 @@ export default function Translator() {
   };
 
   const loadFile = async (f: File) => {
-    if (!f.name.endsWith(".srt")) {
-      setError("Please upload a valid .srt subtitle file.");
+    const fmt = detectFormat(f.name);
+    if (!fmt) {
+      setError(`Please upload a valid subtitle file (${SUPPORTED_EXTENSIONS.join(", ")}).`);
       return;
     }
     setError("");
@@ -193,12 +180,14 @@ export default function Translator() {
     setOutputSrt("");
     setDetectedLang(null);
     const text = await f.text();
-    const parsed = parseSRT(text);
+    const { blocks: parsed, extra } = parseSubtitle(text, fmt);
     if (!parsed.length) {
-      setError("Could not parse subtitle blocks. Check the file is a valid .srt.");
+      setError(`Could not parse subtitle blocks. Check the file is a valid ${formatLabel(fmt)} file.`);
       return;
     }
     setFile(f);
+    setFormat(fmt);
+    setFormatExtra(extra);
     setBlocks(parsed);
     const sampleText = parsed.slice(0, 3).map((b) => b.text).join(" ");
     detectLanguage(sampleText);
@@ -218,6 +207,8 @@ export default function Translator() {
 
   const removeFile = () => {
     setFile(null);
+    setFormat(null);
+    setFormatExtra(undefined);
     setBlocks([]);
     setStatus("idle");
     setLogs([]);
@@ -266,7 +257,7 @@ export default function Translator() {
       setProgress(Math.round(((Math.min(i + BATCH, blocks.length)) / blocks.length) * 100));
     }
 
-    const srt = buildSRT(result);
+    const srt = format ? buildSubtitle(result, format, formatExtra) : "";
     setOutputSrt(srt);
     setBlocks(result);
     setElapsed(Math.round((Date.now() - start) / 100) / 10);
@@ -275,11 +266,13 @@ export default function Translator() {
   };
 
   const download = () => {
-    if (!outputSrt || !file) return;
+    if (!outputSrt || !file || !format) return;
+    const ext = outputExtension(file.name, format);
+    const baseName = file.name.replace(/\.[^.]+$/, "");
     const blob = new Blob([outputSrt], { type: "text/plain;charset=utf-8" });
     const a = document.createElement("a");
     a.href = URL.createObjectURL(blob);
-    a.download = file.name.replace(".srt", `_${targetLangName.toLowerCase().replace(/\s+/g, "_")}.srt`);
+    a.download = `${baseName}_${targetLangName.toLowerCase().replace(/\s+/g, "_")}${ext}`;
     a.click();
   };
 
@@ -293,8 +286,8 @@ export default function Translator() {
           Subtitle Translator
         </h1>
         <p className="text-[#6e6e73] text-sm sm:text-base leading-relaxed">
-          Upload an .srt file. We detect the language and translate it to
-          your choice, timing untouched.
+          Upload an SRT, VTT, ASS/SSA, or SUB file. We detect the language and
+          translate it to your choice, timing untouched.
         </p>
       </div>
 
@@ -312,15 +305,21 @@ export default function Translator() {
               background: dragging ? "#fff0f4" : "transparent",
             }}
           >
-            <input ref={inputRef} type="file" accept=".srt" className="hidden" onChange={onFileChange} />
+            <input
+              ref={inputRef}
+              type="file"
+              accept={SUPPORTED_EXTENSIONS.join(",")}
+              className="hidden"
+              onChange={onFileChange}
+            />
             <div
               className="w-12 h-12 sm:w-14 sm:h-14 rounded-full flex items-center justify-center mx-auto mb-4"
               style={{ background: "#fff0f4", color: "#E8003D" }}
             >
               <IconDoc />
             </div>
-            <p className="text-[#1d1d1f] font-medium text-sm sm:text-base mb-1">Drop your .srt file here</p>
-            <p className="text-[#6e6e73] text-sm">or click to browse</p>
+            <p className="text-[#1d1d1f] font-medium text-sm sm:text-base mb-1">Drop your subtitle file here</p>
+            <p className="text-[#6e6e73] text-sm">SRT, VTT, ASS, SSA, or SUB · or click to browse</p>
           </div>
         ) : null}
 
@@ -485,7 +484,7 @@ export default function Translator() {
                 style={{ background: "#E8003D" }}
               >
                 <IconDownload />
-                Download {targetLangName} .srt
+                Download {targetLangName} {file && format ? outputExtension(file.name, format) : ""}
               </button>
               <button
                 onClick={translate}
