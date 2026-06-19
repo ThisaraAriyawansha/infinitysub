@@ -37,6 +37,20 @@ export const metadata: Metadata = {
   authors: [{ name: "PlexCode", url: "https://plexcode.vercel.app/" }],
   creator: "PlexCode",
   publisher: SITE_NAME,
+  alternates: {
+    canonical: "/",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
+  },
   openGraph: {
     type: "website",
     locale: "en_US",
@@ -67,10 +81,34 @@ export const viewport: Viewport = {
   themeColor: "#E8003D",
 };
 
+const jsonLd = {
+  "@context": "https://schema.org",
+  "@type": "WebApplication",
+  name: SITE_NAME,
+  url: "https://infinitysub.vercel.app",
+  description: DESCRIPTION,
+  applicationCategory: "MultimediaApplication",
+  operatingSystem: "Any",
+  offers: {
+    "@type": "Offer",
+    price: "0",
+    priceCurrency: "USD",
+  },
+  author: {
+    "@type": "Organization",
+    name: "PlexCode",
+    url: "https://plexcode.vercel.app/",
+  },
+};
+
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={inter.variable}>
       <body className="min-h-screen flex flex-col bg-white">
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <Header />
         <div className="flex-1">{children}</div>
         <Footer />
