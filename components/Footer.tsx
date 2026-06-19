@@ -45,9 +45,9 @@ export default function Footer() {
               backgroundSize: "40px 40px",
             }}
           />
-          <div className="footer-glow-a absolute -top-32 -left-20 h-72 w-72 rounded-full bg-white/20 blur-3xl" />
-          <div className="footer-glow-b absolute -bottom-24 right-0 h-80 w-80 rounded-full bg-[#ff5577]/30 blur-3xl" />
           <div className="absolute inset-0 bg-gradient-to-b from-black/10 via-transparent to-black/15" />
+          <div className="footer-glow-a absolute -top-32 -left-20 h-72 w-72 rounded-full bg-white/35 blur-3xl" />
+          <div className="footer-glow-b absolute -bottom-24 right-0 h-80 w-80 rounded-full bg-[#ff5577]/45 blur-3xl" />
         </div>
 
         <div className="relative grid grid-cols-1 md:grid-cols-[1.3fr_1fr_1fr] gap-10">
@@ -114,11 +114,12 @@ export default function Footer() {
               <div className="flex items-center gap-3">
                 <span className="h-8 w-8 flex items-center justify-center rounded-full border border-white/40 shrink-0">
                   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
-                    <path d="M21 16.42v2.5a1.5 1.5 0 0 1-1.62 1.5A18 18 0 0 1 3 4.62 1.5 1.5 0 0 1 4.5 3h2.5a1.5 1.5 0 0 1 1.5 1.27c.1.7.27 1.4.5 2.06a1.5 1.5 0 0 1-.38 1.59l-1 1a14.5 14.5 0 0 0 6 6l1-1a1.5 1.5 0 0 1 1.59-.38c.66.23 1.36.4 2.06.5A1.5 1.5 0 0 1 21 16.42Z" />
+                    <circle cx="12" cy="12" r="9" />
+                    <path d="M3 12h18M12 3c2.5 2.6 3.8 5.7 3.8 9s-1.3 6.4-3.8 9c-2.5-2.6-3.8-5.7-3.8-9s1.3-6.4 3.8-9Z" />
                   </svg>
                 </span>
                 <a href="https://plexcode.vercel.app/" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors">
-                  plexCode
+                  plexcode.vercel.app
                 </a>
               </div>
             </div>
