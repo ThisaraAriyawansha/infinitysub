@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx tsc *)",
+      "Bash(npx eslint *)",
+      "Skill(run)",
+      "Skill(run:*)",
+      "Bash(node __verify_anim.mjs)",
+      "Bash(node __verify_css.mjs)",
+      "Bash(curl -s http://localhost:3000 -o /tmp/page2.html)",
+      "Read(//tmp/**)"
+    ]
+  }
+}
