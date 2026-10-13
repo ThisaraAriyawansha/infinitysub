@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
     const { text } = await req.json();
     if (!text) return NextResponse.json({ error: "No text provided" }, { status: 400 });
 
-    const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=en&dt=t&q=${encodeURIComponent(String(text).slice(0, 200))}`;
+    const url = `https://translate.googleapis.com/translate_a/single?client=dict-chrome-ex&sl=auto&tl=en&dt=t&q=${encodeURIComponent(String(text).slice(0, 200))}`;
     const res = await fetch(url);
     if (!res.ok) throw new Error(`Google error: ${res.status}`);
     const data = await res.json();

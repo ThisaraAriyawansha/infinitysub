@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 async function translateText(text: string, sourceLang: string, targetLang: string): Promise<string> {
-  const url = `https://translate.googleapis.com/translate_a/single?client=gtx&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
+  const url = `https://translate.googleapis.com/translate_a/single?client=dict-chrome-ex&sl=${sourceLang}&tl=${targetLang}&dt=t&q=${encodeURIComponent(text)}`;
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Google Translate error: ${res.status}`);
   const data = await res.json();
